@@ -1,76 +1,79 @@
 package com.akawane.shopify.controller;
 
-import com.akawane.shopify.exception.ItemNotFoundException;
+import com.akawane.shopify.dto.ItemDTO;
+import com.akawane.shopify.mapper.ItemMapper;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.repository.ItemRepository;
+import com.akawane.shopify.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
-@RestController
+
+@Controller
 @RequestMapping("/api/v1/inventory")
 public class ItemController {
+//
+//    @Autowired
+//    private ItemRepository itemRepository;
 
     @Autowired
-    private ItemRepository itemRepository;
+    private ItemService itemService;
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @PostMapping("/createItem")
+    public ResponseEntity<Item> createEmployee(@RequestBody ItemDTO itemDTO){
+        Item item = itemMapper.dtoToModel(itemDTO);
+        itemService.saveItem(item);
+        return ResponseEntity.ok(item);
+    }
+
 
     /*
 	Get all items
 	 */
-    @GetMapping("/item")
-    public List<Item> getAllItem(){
-        return itemRepository.findAll();
+    @GetMapping("/viewItem")
+    public ResponseEntity<List<Item>> getAllItem(){
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    /*
-    Create new item
-     */
-    @PostMapping("/item")
-    public Item createEmployee(@RequestBody Item item){
-        return itemRepository.save(item);
-    }
-
-    /*
-        Update Item
-     */
-    @PutMapping("/updateItem/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item itemDetails){
-
-        Item item = itemRepository.findById(id).
-                orElseThrow(()->new ItemNotFoundException("Item not exist with id: "+id));
-        if(itemDetails.getItemName() != null){
-            item.setItemName(itemDetails.getItemName());
-        }
-        if(itemDetails.getCategory() != null){
-            item.setCategory(itemDetails.getCategory());
-        }
-        if(itemDetails.getCompany() != null){
-            item.setCompany(itemDetails.getCompany());
-        }
-        if(itemDetails.getQuantity() != 0){
-            item.setQuantity(itemDetails.getQuantity());
-        }
-        if(itemDetails.getPrice() != null){
-            item.setPrice(itemDetails.getPrice());
-        }
-
-        Item updatedItem  = itemRepository.save(item);
-        return ResponseEntity.ok(updatedItem);
-    }
-
-    /*
-        Delete item by id
-     */
-    @DeleteMapping("/deleteItem/{id}")
-    public ResponseEntity<String> deleteItem(@PathVariable Long id){
-
-        Item item = itemRepository.findById(id).
-                orElseThrow(()->new ItemNotFoundException("Item not exist with id: "+id));
-        itemRepository.delete(item);
-
-        return ResponseEntity.ok("Deleted item with id:"+id);
-    }
+//    /*
+//    Create new item
+//     */
+//    @PostMapping("/item")
+//    public Item createEmployee(@RequestBody Item item){
+//        return itemRepository.save(item);
+//    }
+//
+//    /*
+//        Update Item
+//     */
+//    @PutMapping("/updateItem/{id}")
+//    public ResponseEntity<Item> updateItem(@RequestBody Item itemDetails){
+//        itemRepository.save(itemDetails);
+//        return ResponseEntity.ok(itemDetails);
+//    }
+//
+//    /*
+//        Delete item by id
+//     */
+//    @DeleteMapping("/deleteItem/{id}")
+//    public ResponseEntity<String> deleteItem(@PathVariable Long id){
+//        Item item = itemRepository.findById(id).
+//                orElseThrow(()->new ItemNotFoundException("Item not exist with id: "+id));
+//        itemRepository.delete(item);
+//        return ResponseEntity.ok("Deleted item with id:"+id);
+//    }
 
 }
