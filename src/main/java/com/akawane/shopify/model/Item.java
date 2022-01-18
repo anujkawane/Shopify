@@ -1,5 +1,8 @@
 package com.akawane.shopify.model;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,19 +15,31 @@ public class Item {
     private long id;
 
     @Column(name = "item_Name")
-    private String itemName;
+    private String name;
 
     @Column(name = "item_Category")
-    private String itemCategory;
+    private Category category;
 
     @Column(name = "item_price")
-    private double itemPrice;
+    private double price;
 
     @Column(name = "item_quantity")
-    private int item_quantity;
+    private int quantity;
 
     @Column(name = "invoiceNumber")
     private long invoiceNumber;
+
+    @Column(name = "createdDate")
+    private String createdDate;
+
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
 
     public Item() {
 
@@ -38,36 +53,36 @@ public class Item {
         this.id = id;
     }
 
-    public String getItemName() {
-        return itemName;
+    public String getName() {
+        return name;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getItemCategory() {
-        return itemCategory;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setItemCategory(String itemCategory) {
-        this.itemCategory = itemCategory;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public double getItemPrice() {
-        return itemPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setItemPrice(double itemPrice) {
-        this.itemPrice = itemPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public int getItem_quantity() {
-        return item_quantity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setItem_quantity(int item_quantity) {
-        this.item_quantity = item_quantity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public long getInvoiceNumber() {
@@ -78,16 +93,17 @@ public class Item {
         this.invoiceNumber = invoiceNumber;
     }
 
-    public Item(long id, String itemName, String item_Category, double item_price, int item_quantity, long invoiceNumber) {
+    public Item(long id, String name, Category category, double price, int quantity, long invoiceNumber, String createdDate) {
         this.id = id;
-        this.itemName = itemName;
-        this.itemCategory = item_Category;
-        this.itemPrice = item_price;
-        this.item_quantity = item_quantity;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
         this.invoiceNumber = invoiceNumber;
+        this.createdDate = createdDate;
     }
 
     public boolean inStock() {
-        return this.item_quantity > 0;
+        return this.quantity > 0;
     }
 }
