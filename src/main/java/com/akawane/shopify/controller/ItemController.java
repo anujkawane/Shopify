@@ -12,12 +12,9 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
-@Controller
+@RestController
 @RequestMapping(value = "/api/v1/items")
 public class ItemController {
 

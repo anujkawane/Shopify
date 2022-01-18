@@ -2,9 +2,10 @@ package com.akawane.shopify.mapper;
 import com.akawane.shopify.Utilities.Helper;
 import com.akawane.shopify.dto.ItemCreateDTO;
 import com.akawane.shopify.model.Item;
-import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class ItemMapper{
         item.setQuantity(itemDto.getQuantity());
         item.setPrice(itemDto.getPrice());
         item.setName(itemDto.getName());
-        item.setCreatedDate(Helper.getCurrentTime());
+        item.setCreatedAt(ZonedDateTime.now(ZoneId.systemDefault()));
         return item;
     }
 }

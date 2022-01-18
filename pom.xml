@@ -95,6 +95,12 @@
 			<version>${jackson.version}</version>
 		</dependency>
 
+		<!--https://search.maven.org/remotecontent?filepath=org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -102,6 +108,20 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.7</version>
+				<configuration>
+					<rulesets>
+						<ruleset>/rulesets/java/braces.xml</ruleset>
+						<ruleset>/rulesets/java/naming.xml</ruleset>
+						<ruleset>/usr/pmd/rulesets/strings.xml</ruleset>
+						<ruleset>http://localhost/design.xml</ruleset>
+					</rulesets>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
