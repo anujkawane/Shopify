@@ -2,6 +2,7 @@ package com.akawane.shopify.controller;
 
 import com.akawane.shopify.dto.ItemCreateDTO;
 import com.akawane.shopify.mapper.ItemMapper;
+import com.akawane.shopify.model.Category;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,21 +43,25 @@ public class ItemController {
 	 */
     @GetMapping()
     public ResponseEntity<Iterable<Item>> getAllItem(){
-        return ResponseEntity.ok(itemService.getAllItems(true));
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
     @GetMapping(params = "showInStockOnly")
     public ResponseEntity<Iterable<Item>> getInStockItems(@RequestParam(required = false, defaultValue = "false") final boolean showInStockOnly) {
         if (showInStockOnly)
-            return  ResponseEntity.ok(itemService.getAllInStockItems(true));
-        return ResponseEntity.ok(itemService.getAllItems(true));
+            return  ResponseEntity.ok(itemService.getAllInStockItems());
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id) {
         itemService.deleteItem(id);
         return ResponseEntity.ok("Deleted item with id:"+id);
-
     }
 
+
+    @GetMapping(params = "quantity")
+    public ResponseEntity<List<Item>> getInStockItems(@RequestParam(required = false) final int quantity) {
+        return ResponseEntity.ok(itemService.getItemByFilter(quantity));
+    }
 }

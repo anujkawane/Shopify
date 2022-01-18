@@ -1,5 +1,6 @@
 package com.akawane.shopify.services;
 
+import com.akawane.shopify.model.Category;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.repository.ItemRepository;
 import org.hibernate.Filter;
@@ -43,10 +44,10 @@ public class ItemService {
     }
 
 
-    public Iterable<Item> getAllItems(boolean isActive) {
+    public Iterable<Item> getAllItems() {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isActive", isActive);
+        filter.setParameter("isActive", true);
         return itemRepository.findAll();
     }
 
@@ -59,19 +60,17 @@ public class ItemService {
         itemRepository.deleteById(itemId);
     }
 
-    public List<Item> getAllInStockItems(boolean isActive) {
+    public List<Item> getAllInStockItems() {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isActive", isActive);
+        filter.setParameter("isActive", true);
         return StreamSupport.stream(itemRepository.findAll().spliterator(), false)
+                .filter(item -> item.getQuantity() > 0)
                 .collect(Collectors.toList());
     }
 
-//    public List<Item> getItemByCategory(final String category) {
-//        return itemRepository.findAll()
-//                .stream()
-//                .filter(item -> item.getCategory().equals(category))
-//                .collect(Collectors.toList());
-//    }
+    public List<Item> getItemByFilter(int quantiy) {
+        return itemRepository.findByQuantityGreaterThanEqual(quantiy).get();
+    }
 
 }
