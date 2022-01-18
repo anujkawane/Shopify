@@ -1,5 +1,7 @@
 package com.akawane.shopify.services;
 
+import com.akawane.shopify.mapper.ItemMapper;
+import com.akawane.shopify.model.CreateItemRequestWrapper;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.repository.ItemRepository;
 import org.hibernate.Filter;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,6 +24,9 @@ public class ItemService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ItemMapper itemMapper;
 
     public Item getItemById(long id) {
         Optional<Item> optional = itemRepository.findById(id);
@@ -50,7 +56,11 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public void saveItem(Item item) {
+    public void createItem(CreateItemRequestWrapper requestWrapper) {
+
+        Item item = itemMapper.mapRequestToItem(requestWrapper);
+        item.setCreatedAt(ZonedDateTime.now());
+        item.setUpdatedAt(ZonedDateTime.now());
         itemRepository.save(item);
     }
 

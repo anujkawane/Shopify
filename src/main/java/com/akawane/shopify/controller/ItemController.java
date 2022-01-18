@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.ZonedDateTime;
 
 
 @RestController
@@ -20,16 +21,13 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @Autowired
-    private ItemMapper itemMapper;
-
     @PostMapping()
-    public ResponseEntity<String> createItem(@Valid @RequestBody CreateItemRequestWrapper itemDTO, Errors errors){
+    public ResponseEntity<String> createItem(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
         if(errors.hasErrors()) {
             return ResponseEntity.ok(errors.getAllErrors().toString());
         }
-        Item item = itemMapper.dtoToModel(itemDTO);
-        itemService.saveItem(item);
+
+        itemService.createItem(request);
         return ResponseEntity.ok(" success");
     }
 

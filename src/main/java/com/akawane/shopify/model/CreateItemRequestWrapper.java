@@ -41,5 +41,5 @@ public class CreateItemRequestWrapper {
     @Min(value = 1)
     @Max(value = Long.MAX_VALUE)
     @JsonProperty("invoiceNumber")
-    private long invoiceNumber;
+    public long invoiceNumber;
 }
