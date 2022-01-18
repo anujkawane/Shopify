@@ -28,7 +28,7 @@ public class ItemCreateDTO {
     private double price;
 
     @NotNull(message = "Item quantity is mandatory")
-    @Min(1)
+    @Min(0)
     @Max(value = Integer.MAX_VALUE)
     @JsonProperty("quantity")
     private int quantity;

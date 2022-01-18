@@ -1,17 +1,20 @@
 package com.akawane.shopify.model;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Inventory_item")
+@SQLDelete(sql = "update Inventory_item SET active = false WHERE id =?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isActive", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "active = :isActive")
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_ID")
     private long id;
 
     @Column(name = "item_Name")
@@ -32,6 +35,15 @@ public class Item {
     @Column(name = "createdDate")
     private String createdDate;
 
+    private boolean active = true;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean isActive) {
+        this.active = isActive;
+    }
 
     public String getCreatedDate() {
         return createdDate;

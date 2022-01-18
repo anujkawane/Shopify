@@ -12,7 +12,9 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -39,21 +41,22 @@ public class ItemController {
 	Get all items
 	 */
     @GetMapping()
-    public ResponseEntity<List<Item>> getAllItem(){
-        return ResponseEntity.ok(itemService.getAllItems());
+    public ResponseEntity<Iterable<Item>> getAllItem(){
+        return ResponseEntity.ok(itemService.getAllItems(true));
     }
 
     @GetMapping(params = "showInStockOnly")
-    public ResponseEntity<List<Item>> getInStockItems(@RequestParam(required = false, defaultValue = "false") final boolean showInStockOnly) {
+    public ResponseEntity<Iterable<Item>> getInStockItems(@RequestParam(required = false, defaultValue = "false") final boolean showInStockOnly) {
         if (showInStockOnly)
-            return  ResponseEntity.ok(itemService.getAllInStockItems());
-        return ResponseEntity.ok(itemService.getAllItems());
+            return  ResponseEntity.ok(itemService.getAllInStockItems(true));
+        return ResponseEntity.ok(itemService.getAllItems(true));
     }
 
-    @DeleteMapping(params = "itemToDelete")
-    public ResponseEntity<String> Delete(@RequestParam(required = true) final long itemToDelete) {
-        itemService.deleteItem(itemToDelete);
-        return ResponseEntity.ok("Deleted item with id:"+itemToDelete);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+        itemService.deleteItem(id);
+        return ResponseEntity.ok("Deleted item with id:"+id);
+
     }
 
 }
