@@ -1,12 +1,11 @@
 package com.akawane.shopify.controller;
 
-import com.akawane.shopify.dto.ItemCreateDTO;
+import com.akawane.shopify.model.CreateItemRequestWrapper;
 import com.akawane.shopify.mapper.ItemMapper;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +24,7 @@ public class ItemController {
     private ItemMapper itemMapper;
 
     @PostMapping()
-    public ResponseEntity<String> createItem(@Valid @RequestBody ItemCreateDTO itemDTO, Errors errors){
+    public ResponseEntity<String> createItem(@Valid @RequestBody CreateItemRequestWrapper itemDTO, Errors errors){
         if(errors.hasErrors()) {
             return ResponseEntity.ok(errors.getAllErrors().toString());
         }
