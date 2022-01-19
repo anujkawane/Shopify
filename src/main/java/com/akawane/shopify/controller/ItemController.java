@@ -19,9 +19,8 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-
     @PostMapping()
-    public ResponseEntity<String> createItem(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
+    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
         if(errors.hasErrors()) {
             return ResponseEntity.ok(errors.getAllErrors().toString());
         }
@@ -31,14 +30,14 @@ public class ItemController {
 
     @GetMapping()
     public ResponseEntity<Iterable<Item>> getAllItem(){
-        return ResponseEntity.ok(itemService.getAllItems(true));
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
     @GetMapping(params = "showInStockOnly")
     public ResponseEntity<Iterable<Item>> getInStockItems(@RequestParam(required = true, defaultValue = "false") final boolean showInStockOnly) {
         if (showInStockOnly)
-            return  ResponseEntity.ok(itemService.getAllInStockItems(true));
-        return ResponseEntity.ok(itemService.getAllItems(true));
+            return  ResponseEntity.ok(itemService.getAllInStockItems());
+        return ResponseEntity.ok(itemService.getAllItems());
     }
 
     @DeleteMapping("/{id}")
@@ -47,22 +46,17 @@ public class ItemController {
         return ResponseEntity.ok("Deleted item with id:"+id);
     }
 
-    @GetMapping(params = "quantity")
-    public ResponseEntity<List<Item>> getInStockItems(@RequestParam(required = false) final int quantity) {
-        return ResponseEntity.ok(itemService.getItemByFilter(quantity));
-    }
-
-    @GetMapping(params = "price")
-    public ResponseEntity<List<Item>> getItemByPriceAndCreatedDate(@RequestParam(required = false) final double price) {
-        return ResponseEntity.ok(itemService.getItemByPriceAndCreatedDate(price));
-    }
-
     @PatchMapping("/{id}")
-    public ResponseEntity<String> patch(@PathVariable("id") Long id, @RequestBody Map<Object, Object> fields){
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody Map<Object, Object> fields){
         Item item = itemService.updateCustomer(id, fields);
         if(item != null){
             return ResponseEntity.ok("Item updated with id: "+id);
         }
         return ResponseEntity.ok("No item found with id: "+id);
+    }
+
+    @GetMapping(params = "quantity")
+    public ResponseEntity<List<Item>> getInStockItems(@RequestParam(required = false) final int quantity) {
+        return ResponseEntity.ok(itemService.getItemByFilter(quantity));
     }
 }

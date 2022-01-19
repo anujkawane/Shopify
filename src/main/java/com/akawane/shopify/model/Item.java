@@ -30,15 +30,10 @@ public class Item {
     private long invoiceNumber;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
+    private boolean active;
 
-
-    private boolean active = true;
-
-    public boolean isActive() {
-        return active;
+    public Item(){
+        this.active = true;
     }
 
-    public boolean inStock() {
-        return this.quantity > 0;
-    }
 }

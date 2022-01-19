@@ -14,6 +14,5 @@ import java.util.Optional;
 public interface ItemRepository extends CrudRepository<Item, Long> {
 
     Optional<List<Item>> findByQuantityGreaterThan(int quantity);
-    Optional<List<Item>> findByPriceGreaterThanEqualAndCreatedAtAfter(double price, ZonedDateTime createdAt);
 
 }

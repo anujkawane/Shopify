@@ -48,10 +48,10 @@ public class ItemService {
         return errorMessage;
     }
 
-    public Iterable<Item> getAllItems(boolean isActive) {
+    public Iterable<Item> getAllItems() {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isActive", isActive);
+        filter.setParameter("isActive", true);
         return itemRepository.findAll();
     }
 
@@ -68,7 +68,7 @@ public class ItemService {
         itemRepository.deleteById(itemId);
     }
 
-    public List<Item> getAllInStockItems(boolean isActive) {
+    public List<Item> getAllInStockItems() {
         if(itemRepository.findByQuantityGreaterThan(0).isPresent())
             return itemRepository.findByQuantityGreaterThan(0).get();
         return null;
@@ -80,12 +80,6 @@ public class ItemService {
         return null;
     }
 
-    public List<Item> getItemByPriceAndCreatedDate(double price){
-        if(itemRepository.findByPriceGreaterThanEqualAndCreatedAtAfter(price, ZonedDateTime.now()).isPresent())
-            return itemRepository.findByPriceGreaterThanEqualAndCreatedAtAfter(price, ZonedDateTime.now()).get();
-        return null;
-    }
-
     public Item updateCustomer(Long id, Map<Object, Object> fields) {
         Optional<Item> item = itemRepository.findById(id);
         if(item.isPresent()){
@@ -93,7 +87,7 @@ public class ItemService {
             fields.forEach((key, value) ->{
                 Field field = ReflectionUtils.findField(Item.class, (String) key);
                 field.setAccessible(true);
-                ReflectionUtils.setField(field,item.get(), value);
+                ReflectionUtils.setField(field, item.get(), value);
             });
             item.get().setUpdatedAt(ZonedDateTime.now());
             Item updateItem =  itemRepository.save(item.get());
@@ -101,4 +95,6 @@ public class ItemService {
         }
         return null;
     }
+
+
 }
