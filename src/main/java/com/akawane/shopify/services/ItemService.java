@@ -1,18 +1,22 @@
 package com.akawane.shopify.services;
 
-import com.akawane.shopify.model.Category;
+import com.akawane.shopify.mapper.ItemMapper;
+import com.akawane.shopify.model.CreateItemRequestWrapper;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.repository.ItemRepository;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
+import java.lang.reflect.Field;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 public class ItemService {
@@ -23,13 +27,14 @@ public class ItemService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private ItemMapper itemMapper;
+
     public Item getItemById(long id) {
         Optional<Item> optional = itemRepository.findById(id);
         Item item = null;
         if (optional.isPresent()) {
             item = optional.get();
-        } else {
-            // Exception
         }
         return item;
     }
@@ -43,15 +48,18 @@ public class ItemService {
         return errorMessage;
     }
 
-
-    public Iterable<Item> getAllItems() {
+    public Iterable<Item> getAllItems(boolean isActive) {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isActive", true);
+        filter.setParameter("isActive", isActive);
         return itemRepository.findAll();
     }
 
-    public void saveItem(Item item) {
+    public void createItem(CreateItemRequestWrapper requestWrapper) {
+
+        Item item = itemMapper.mapRequestToItem(requestWrapper);
+        item.setCreatedAt(ZonedDateTime.now());
+        item.setUpdatedAt(ZonedDateTime.now());
         itemRepository.save(item);
     }
 
@@ -60,17 +68,37 @@ public class ItemService {
         itemRepository.deleteById(itemId);
     }
 
-    public List<Item> getAllInStockItems() {
-        Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isActive", true);
-        return StreamSupport.stream(itemRepository.findAll().spliterator(), false)
-                .filter(item -> item.getQuantity() > 0)
-                .collect(Collectors.toList());
+    public List<Item> getAllInStockItems(boolean isActive) {
+        if(itemRepository.findByQuantityGreaterThan(0).isPresent())
+            return itemRepository.findByQuantityGreaterThan(0).get();
+        return null;
     }
 
-    public List<Item> getItemByFilter(int quantiy) {
-        return itemRepository.findByQuantityGreaterThanEqual(quantiy).get();
+    public List<Item> getItemByFilter(int quantity){
+        if(itemRepository.findByQuantityGreaterThan(quantity).isPresent())
+            return itemRepository.findByQuantityGreaterThan(quantity).get();
+        return null;
     }
 
+    public List<Item> getItemByPriceAndCreatedDate(double price){
+        if(itemRepository.findByPriceGreaterThanEqualAndCreatedAtAfter(price, ZonedDateTime.now()).isPresent())
+            return itemRepository.findByPriceGreaterThanEqualAndCreatedAtAfter(price, ZonedDateTime.now()).get();
+        return null;
+    }
+
+    public Item updateCustomer(Long id, Map<Object, Object> fields) {
+        Optional<Item> item = itemRepository.findById(id);
+        if(item.isPresent()){
+
+            fields.forEach((key, value) ->{
+                Field field = ReflectionUtils.findField(Item.class, (String) key);
+                field.setAccessible(true);
+                ReflectionUtils.setField(field,item.get(), value);
+            });
+            item.get().setUpdatedAt(ZonedDateTime.now());
+            Item updateItem =  itemRepository.save(item.get());
+            return updateItem;
+        }
+        return null;
+    }
 }
