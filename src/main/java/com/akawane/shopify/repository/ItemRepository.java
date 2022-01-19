@@ -6,10 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends CrudRepository<Item, Long> {
-    Optional<List<Item>> findByQuantityGreaterThanEqual(int quantity);
+
+    Optional<List<Item>> findByQuantityGreaterThan(int quantity);
+    Optional<List<Item>> findByPriceGreaterThanEqualAndCreatedAtAfter(double price, ZonedDateTime createdAt);
+
 }
