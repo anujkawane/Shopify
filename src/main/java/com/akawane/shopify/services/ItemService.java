@@ -2,7 +2,9 @@ package com.akawane.shopify.services;
 
 import com.akawane.shopify.mapper.ItemMapper;
 import com.akawane.shopify.model.CreateItemRequestWrapper;
+import com.akawane.shopify.model.Deleted;
 import com.akawane.shopify.model.Item;
+import com.akawane.shopify.repository.DeletedRepository;
 import com.akawane.shopify.repository.ItemRepository;
 import org.hibernate.Filter;
 import org.hibernate.Session;
@@ -23,6 +25,9 @@ public class ItemService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private DeletedRepository deletedRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -64,8 +69,10 @@ public class ItemService {
     }
 
 
-    public void deleteItem(Long itemId) {
+    public void deleteItem(Long itemId, Deleted request) {
         itemRepository.deleteById(itemId);
+        request.setItemId(itemId);
+        deletedRepository.save(request);
     }
 
     public List<Item> getAllInStockItems() {
@@ -89,6 +96,18 @@ public class ItemService {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, item.get(), value);
             });
+            item.get().setUpdatedAt(ZonedDateTime.now());
+            Item updateItem =  itemRepository.save(item.get());
+            return updateItem;
+        }
+        return null;
+    }
+
+
+    public Item undoDelete(Long id){
+        Optional<Item> item =  itemRepository.findById(id);
+        if(item.isPresent()){
+            item.get().setActive(true);
             item.get().setUpdatedAt(ZonedDateTime.now());
             Item updateItem =  itemRepository.save(item.get());
             return updateItem;

@@ -1,8 +1,10 @@
 package com.akawane.shopify.controller;
 
 import com.akawane.shopify.model.CreateItemRequestWrapper;
+import com.akawane.shopify.model.Deleted;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.services.ItemService;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -33,6 +35,11 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
+    @PatchMapping("/undoDelete/{id}")
+    public ResponseEntity<Item> undoDelete(@PathVariable("id") Long id){
+        return ResponseEntity.ok(itemService.undoDelete(id));
+    }
+
     @GetMapping(params = "showInStockOnly")
     public ResponseEntity<Iterable<Item>> getInStockItems(@RequestParam(required = true, defaultValue = "false") final boolean showInStockOnly) {
         if (showInStockOnly)
@@ -41,8 +48,8 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
-        itemService.deleteItem(id);
+    public ResponseEntity<String> delete(@PathVariable("id") Long id, @RequestBody Deleted request) {
+        itemService.deleteItem(id, request);
         return ResponseEntity.ok("Deleted item with id:"+id);
     }
 
