@@ -8,7 +8,6 @@ import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.persistence.EntityManager;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -77,11 +76,5 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
-//    public List<Item> getItemByCategory(final String category) {
-//        return itemRepository.findAll()
-//                .stream()
-//                .filter(item -> item.getCategory().equals(category))
-//                .collect(Collectors.toList());
-//    }
 
 }
