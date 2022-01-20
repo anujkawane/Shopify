@@ -4,13 +4,11 @@ import com.akawane.shopify.model.CreateItemRequestWrapper;
 import com.akawane.shopify.model.Deleted;
 import com.akawane.shopify.model.Item;
 import com.akawane.shopify.services.ItemService;
-import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 
@@ -18,16 +16,22 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/items")
 public class ItemController {
 
-    @Autowired
+
     private ItemService itemService;
 
+    @Autowired
+    public ItemController(final ItemService itemService) {
+        this.itemService = itemService;
+    }
+
     @PostMapping()
-    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
-        if(errors.hasErrors()) {
-            return ResponseEntity.ok(errors.getAllErrors().toString());
-        }
+    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request){
+//    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
+//        if(errors.hasErrors()) {
+//            return ResponseEntity.ok(errors.getAllErrors().toString());
+//        }
         itemService.createItem(request);
-        return ResponseEntity.ok(" success");
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping()
@@ -35,9 +39,20 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    @PatchMapping("/undoDelete/{id}")
-    public ResponseEntity<Item> undoDelete(@PathVariable("id") Long id){
-        return ResponseEntity.ok(itemService.undoDelete(id));
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") long id, @RequestBody Map<Object, Object> fields){
+        Item item = itemService.updateItem(id, fields);
+        if(item != null){
+            return ResponseEntity.ok("Item updated with id: "+id);
+        }
+        return ResponseEntity.ok("No item found with id: "+id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id, @RequestBody Deleted request) {
+        itemService.deleteItem(id, request);
+        return ResponseEntity.ok("Deleted item with id:"+id);
     }
 
     @GetMapping(params = "showInStockOnly")
@@ -47,23 +62,8 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id, @RequestBody Deleted request) {
-        itemService.deleteItem(id, request);
-        return ResponseEntity.ok("Deleted item with id:"+id);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody Map<Object, Object> fields){
-        Item item = itemService.updateCustomer(id, fields);
-        if(item != null){
-            return ResponseEntity.ok("Item updated with id: "+id);
-        }
-        return ResponseEntity.ok("No item found with id: "+id);
-    }
-
-    @GetMapping(params = "quantity")
-    public ResponseEntity<List<Item>> getInStockItems(@RequestParam(required = false) final int quantity) {
-        return ResponseEntity.ok(itemService.getItemByFilter(quantity));
+    @PatchMapping("/undoDelete/{id}")
+    public ResponseEntity<Item> undoDelete(@PathVariable("id") long id){
+        return ResponseEntity.ok(itemService.undoDelete(id));
     }
 }

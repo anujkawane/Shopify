@@ -1,5 +1,6 @@
 package com.akawane.shopify.services;
 
+import com.akawane.shopify.exception.EntityNotFoundException;
 import com.akawane.shopify.mapper.ItemMapper;
 import com.akawane.shopify.model.CreateItemRequestWrapper;
 import com.akawane.shopify.model.Deleted;
@@ -11,7 +12,6 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
@@ -23,8 +23,12 @@ import java.util.Optional;
 @Service
 public class ItemService {
 
-    @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    public ItemService(final ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
 
     @Autowired
     private DeletedRepository deletedRepository;
@@ -60,19 +64,22 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public void createItem(CreateItemRequestWrapper requestWrapper) {
+    public Item createItem(CreateItemRequestWrapper requestWrapper) {
 
         Item item = itemMapper.mapRequestToItem(requestWrapper);
         item.setCreatedAt(ZonedDateTime.now());
         item.setUpdatedAt(ZonedDateTime.now());
         itemRepository.save(item);
+        return item;
     }
 
 
-    public void deleteItem(Long itemId, Deleted request) {
+    public Item deleteItem(long itemId, Deleted request) {
+        Item deletedItem  = itemRepository.findById(itemId).orElseThrow(()->new EntityNotFoundException("Item not found with id: "+itemId ));
         itemRepository.deleteById(itemId);
         request.setItemId(itemId);
         deletedRepository.save(request);
+        return deletedItem;
     }
 
     public List<Item> getAllInStockItems() {
@@ -87,7 +94,7 @@ public class ItemService {
         return null;
     }
 
-    public Item updateCustomer(Long id, Map<Object, Object> fields) {
+    public Item updateItem(long id, Map<Object, Object> fields) {
         Optional<Item> item = itemRepository.findById(id);
         if(item.isPresent()){
 
@@ -104,7 +111,7 @@ public class ItemService {
     }
 
 
-    public Item undoDelete(Long id){
+    public Item undoDelete(long id){
         Optional<Item> item =  itemRepository.findById(id);
         if(item.isPresent()){
             item.get().setActive(true);
@@ -114,6 +121,5 @@ public class ItemService {
         }
         return null;
     }
-
 
 }

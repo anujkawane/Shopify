@@ -36,4 +36,15 @@ public class Item {
         this.active = true;
     }
 
+    public Item(long id, String name, Category category, double price, int quantity, long invoiceNumber, ZonedDateTime createdAt, ZonedDateTime updatedAt, boolean active) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.invoiceNumber = invoiceNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.active = active;
+    }
 }

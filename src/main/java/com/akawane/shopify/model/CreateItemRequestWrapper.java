@@ -42,4 +42,13 @@ public class CreateItemRequestWrapper {
     @Max(value = Long.MAX_VALUE)
     @JsonProperty("invoiceNumber")
     public long invoiceNumber;
+
+    public CreateItemRequestWrapper(long id, String name, Category category, double price, int quantity, long invoiceNumber) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.invoiceNumber = invoiceNumber;
+    }
 }
