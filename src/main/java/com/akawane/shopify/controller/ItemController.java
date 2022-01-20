@@ -41,12 +41,9 @@ public class ItemController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") long id, @RequestBody Map<Object, Object> fields){
+    public ResponseEntity<Item> update(@PathVariable("id") long id, @RequestBody Map<Object, Object> fields){
         Item item = itemService.updateItem(id, fields);
-        if(item != null){
-            return ResponseEntity.ok("Item updated with id: "+id);
-        }
-        return ResponseEntity.ok("No item found with id: "+id);
+        return ResponseEntity.ok(item);
     }
 
     @DeleteMapping("/{id}")
