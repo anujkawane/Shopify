@@ -1,79 +1,69 @@
 package com.akawane.shopify.controller;
 
-import com.akawane.shopify.dto.ItemDTO;
-import com.akawane.shopify.mapper.ItemMapper;
+import com.akawane.shopify.model.CreateItemRequestWrapper;
+import com.akawane.shopify.model.Deleted;
 import com.akawane.shopify.model.Item;
-import com.akawane.shopify.repository.ItemRepository;
 import com.akawane.shopify.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Map;
 
 
-@Controller
-@RequestMapping("/api/v1/inventory")
+@RestController
+@RequestMapping(value = "/api/v1/items")
 public class ItemController {
-//
-//    @Autowired
-//    private ItemRepository itemRepository;
 
-    @Autowired
+
     private ItemService itemService;
 
     @Autowired
-    private ItemMapper itemMapper;
-
-    @PostMapping("/createItem")
-    public ResponseEntity<Item> createEmployee(@RequestBody ItemDTO itemDTO){
-        Item item = itemMapper.dtoToModel(itemDTO);
-        itemService.saveItem(item);
-        return ResponseEntity.ok(item);
+    public ItemController(final ItemService itemService) {
+        this.itemService = itemService;
     }
 
+    @PostMapping()
+    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request){
+//    public ResponseEntity<String> create(@Valid @RequestBody CreateItemRequestWrapper request, Errors errors){
+//        if(errors.hasErrors()) {
+//            return ResponseEntity.ok(errors.getAllErrors().toString());
+//        }
+        itemService.createItem(request);
+        return ResponseEntity.ok("success");
+    }
 
-    /*
-	Get all items
-	 */
-    @GetMapping("/viewItem")
-    public ResponseEntity<List<Item>> getAllItem(){
+    @GetMapping()
+    public ResponseEntity<Iterable<Item>> getAllItem(){
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-//    /*
-//    Create new item
-//     */
-//    @PostMapping("/item")
-//    public Item createEmployee(@RequestBody Item item){
-//        return itemRepository.save(item);
-//    }
-//
-//    /*
-//        Update Item
-//     */
-//    @PutMapping("/updateItem/{id}")
-//    public ResponseEntity<Item> updateItem(@RequestBody Item itemDetails){
-//        itemRepository.save(itemDetails);
-//        return ResponseEntity.ok(itemDetails);
-//    }
-//
-//    /*
-//        Delete item by id
-//     */
-//    @DeleteMapping("/deleteItem/{id}")
-//    public ResponseEntity<String> deleteItem(@PathVariable Long id){
-//        Item item = itemRepository.findById(id).
-//                orElseThrow(()->new ItemNotFoundException("Item not exist with id: "+id));
-//        itemRepository.delete(item);
-//        return ResponseEntity.ok("Deleted item with id:"+id);
-//    }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") long id, @RequestBody Map<Object, Object> fields){
+        Item item = itemService.updateItem(id, fields);
+        if(item != null){
+            return ResponseEntity.ok("Item updated with id: "+id);
+        }
+        return ResponseEntity.ok("No item found with id: "+id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") long id, @RequestBody Deleted request) {
+        itemService.deleteItem(id, request);
+        return ResponseEntity.ok("Deleted item with id:"+id);
+    }
+
+    @GetMapping(params = "showInStockOnly")
+    public ResponseEntity<Iterable<Item>> getInStockItems(@RequestParam(required = true, defaultValue = "false") final boolean showInStockOnly) {
+        if (showInStockOnly)
+            return  ResponseEntity.ok(itemService.getAllInStockItems());
+        return ResponseEntity.ok(itemService.getAllItems());
+    }
+
+    @PatchMapping("/undoDelete/{id}")
+    public ResponseEntity<Item> undoDelete(@PathVariable("id") long id){
+        return ResponseEntity.ok(itemService.undoDelete(id));
+    }
 }
