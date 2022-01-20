@@ -14,10 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -29,8 +26,10 @@ class ItemControllerTest {
     private ItemController itemController;
 
     private final List<Item> expected = Lists.newArrayList(
-            new Item(1, "Laptop", Category.ELECTRONICS, 100.0, 10, 12345, ZonedDateTime.now(), ZonedDateTime.now(), true),
-            new Item(2, "FaceWash", Category.COSMETICS, 20, 10, 67890, ZonedDateTime.now(), ZonedDateTime.now(), true));
+            new Item(1, "Laptop", Category.ELECTRONICS, 100.0, 10, 12345,
+                    ZonedDateTime.now(), ZonedDateTime.now(), true),
+            new Item(2, "FaceWash", Category.COSMETICS, 20, 10, 67890,
+                    ZonedDateTime.now(), ZonedDateTime.now(), true));
 
     @Autowired
     private ItemService mockItemService;
@@ -42,9 +41,10 @@ class ItemControllerTest {
     }
 
     @Test
-    void create() throws Exception {
+    void create() {
 
-        CreateItemRequestWrapper newItem = new CreateItemRequestWrapper(1, "HeadPhones", Category.ELECTRONICS, 100.0, 10, 12345);
+        CreateItemRequestWrapper newItem = new CreateItemRequestWrapper(1, "HeadPhones", Category.ELECTRONICS,
+                100.0, 10, 12345);
         when(mockItemService.createItem(newItem)).thenReturn(expected.get(0));
         String result = itemController.create(newItem).getBody();
         Assertions.assertEquals( "success", result);
@@ -72,7 +72,8 @@ class ItemControllerTest {
         when(mockItemService.getAllInStockItems()).thenReturn(expected);
         Iterable<Item> actual  = itemController.getInStockItems(true).getBody();
         List<Item> actualItems = new ArrayList<Item>();
-        actual.forEach(actualItems::add);
+        Objects.requireNonNull(actual).
+                forEach(actualItems::add);
         for(Item item : actualItems){
             assertTrue( item.getQuantity() > 0 );
         }
