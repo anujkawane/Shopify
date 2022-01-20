@@ -54,17 +54,49 @@
 ## API Description
 ### Background
 In this Inventory tracking application, user can have access to all items available under different categories.
- 
 
-## Items 
-Endpoints for fetching all Items
+**Endpoint:** `/api/v1/items`
 
-#### View all products
+## Create Item 
+
+
+Create item by providing the 
+
+
+**Endpoint:** `POST: /`  
+**Sample Request Body:**
+```json 
+{
+    "name": "HeadPhones",
+    "category": "electronics",
+    "price": 200.0,
+    "quantity": 10,
+    "invoiceNumber": 98765
+}
+```
+**Sample Response:**
+```json
+{
+  "id": 1,
+  "name": "HeadPhones",
+  "category": "electronics",
+  "price": 200.0,
+  "quantity": 10,
+  "invoiceNumber": 98765,
+  "createdAt": "2022-01-19T20:41:21.359773-08:00",
+  "updatedAt": "2022-01-19T20:41:21.360231-08:00",
+  "active": true
+}
+```
+
+## View Items
 Returns all the items that are currently available in the inventory.
 If the query param `showInStockOnly` is specified and is true, only in-stock items are returned.
 
 **Endpoint:** `GET: /`  
-**Query Params:**
+**Query Params:*
+
+**Note:** `showInStockOnly` If this parameter is specified, it will return all of the items that are currently in stock. 
 - `showInStockOnly`
     - type: `boolean`
     - required: `false`
@@ -86,3 +118,40 @@ If the query param `showInStockOnly` is specified and is true, only in-stock ite
   }
 ]
 ```
+
+## Update item
+Returns the updated cart details where the product you specified to be added is present and the total cost reflects those changes.
+An exception is thrown if the cart is not present or if the product is not present or the product is already present in the cart.
+
+**Endpoint:** `PATCH: /{id}`
+
+**Sample Request Body:**
+```json
+{
+  "name": "FaceWash",
+  "category": "cosmetics",
+  "price": 25.0,
+  "quantity": 50
+}
+```
+
+
+**Sample Response:**
+```json
+[
+  {
+    "id": 2,
+    "name": "FaceWash",
+    "category": "cosmetics",
+    "price": 25.0,
+    "quantity": 50,
+    "invoiceNumber": 98765,
+    "createdAt": "2022-01-19T20:41:21.359773-08:00",
+    "updatedAt": "2022-01-19T20:41:25.360231-08:00",
+    "active": true
+  }
+]
+```
+
+## Background
+I used Java and the Spring Boot framework for this project because I believed it would speed up development. For simplicity, I'm using an in-memory database (H2 Database), but this can easily be modified to use a database such as Postgres by updating the dependencies in 'build.gradle' and defining a few application properties.
