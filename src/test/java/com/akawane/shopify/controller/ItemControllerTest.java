@@ -29,7 +29,7 @@ class ItemControllerTest {
     private ItemController itemController;
 
     private final List<Item> expected = Lists.newArrayList(
-            new Item(1, "HeadPhones", Category.ELECTRONICS, 100.0, 10, 12345, ZonedDateTime.now(), ZonedDateTime.now(), true),
+            new Item(1, "Laptop", Category.ELECTRONICS, 100.0, 10, 12345, ZonedDateTime.now(), ZonedDateTime.now(), true),
             new Item(2, "FaceWash", Category.COSMETICS, 20, 10, 67890, ZonedDateTime.now(), ZonedDateTime.now(), true));
 
     @Autowired
@@ -80,16 +80,13 @@ class ItemControllerTest {
 
     @Test
     void update() {
-        Item itemToUpdate = expected.get(0);
-//        Item
+        Item itemToUpdate = new Item(1, "HeadPhones", Category.ELECTRONICS, 100.0, 5, 12345, ZonedDateTime.now(), ZonedDateTime.now(), true);
         Map<Object, Object> fields = new LinkedHashMap<>();
         fields.put("name", "Laptop" );
-        fields.put("quantity", 10 );
-
-        when(mockItemService.updateItem(itemToUpdate.getId(),fields)).thenReturn(itemToUpdate);
+        fields.put("quantity", 5 );
+        when(mockItemService.updateItem(itemToUpdate.getId(),fields)).thenReturn(expected.get(0));
         String result = itemController.update(1, fields).getBody();
         Assertions.assertEquals("Item updated with id: "+1, result);
+        System.out.println(itemToUpdate.getName());
     }
-
-
 }
