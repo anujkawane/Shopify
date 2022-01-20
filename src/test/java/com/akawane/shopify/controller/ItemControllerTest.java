@@ -62,8 +62,8 @@ class ItemControllerTest {
     @Test
     void undoDelete() {
         Item undeletedItem = new Item(1, "HeadPhones", Category.ELECTRONICS, 100.0, 10, 12345, ZonedDateTime.now(), ZonedDateTime.now(), true);
-        when(mockItemService.undoDelete(Long.valueOf(1))).thenReturn(undeletedItem);
-        Item actual  = itemController.undoDelete(Long.valueOf(1)).getBody();
+        when(mockItemService.undoDelete(1)).thenReturn(undeletedItem);
+        Item actual  = itemController.undoDelete(1).getBody();
         Assertions.assertEquals(actual.isActive(), true);
     }
 
@@ -85,8 +85,7 @@ class ItemControllerTest {
         fields.put("name", "Laptop" );
         fields.put("quantity", 5 );
         when(mockItemService.updateItem(itemToUpdate.getId(),fields)).thenReturn(expected.get(0));
-        String result = itemController.update(1, fields).getBody();
-        Assertions.assertEquals("Item updated with id: "+1, result);
-        System.out.println(itemToUpdate.getName());
+        Item updatedItem = itemController.update(1, fields).getBody();
+        Assertions.assertEquals(updatedItem, expected.get(0));
     }
 }
