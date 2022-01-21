@@ -154,4 +154,4 @@ An exception is thrown if the cart is not present or if the product is not prese
 ```
 
 ## Background
-I used Java and the Spring Boot framework for this project because I believed it would speed up development. For simplicity, I'm using an in-memory database (H2 Database), but this can easily be modified to use a database such as Postgres by updating the dependencies in 'build.gradle' and defining a few application properties.
+I used Java and the Spring Boot framework for this project because I believed it would speed up development. For simplicity, I'm using an in-memory database (H2 Database), but this can easily be modified to use a database such as Postgres by updating the dependencies in 'POM' and defining a few application properties.
